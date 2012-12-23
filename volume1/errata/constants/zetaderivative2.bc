@@ -1,0 +1,52 @@
+/* zetaderivative.bc
+ *
+*  Usage:
+ *
+ *    echo "scale=45; obase=10;" | cat - zetaderivative2.bc | bc -l
+ *
+ * Derivative of the Riemann Zeta function at 2, Zeta'(2), can be computed
+ * by taking the derivative:
+ *
+ *    -ln(1)/1^2 - ln(2)/2^2 - ... - ln(n)/n^2
+ *
+ * and applying an acceleration technique as described in:
+ *
+ *    Cohen, Henri, Rodriguez Villegas, and Zagier, Don.
+ *    "Convergence Acceleration of Alternating Series"
+ *    Experimental Mathmematics
+ *    Volume 9, Issue 1 (2000)
+ *    pp. 3-12
+ *
+ * tmj   2012.12.20   Created.   [tord.m.johnson@gmail.com]
+ */
+
+n = 2*scale; /* 1.31 * scale sufficient */
+d = (3.0 + sqrt(8.0))^n;
+d = (d + 1.0/d)/2.0;
+b = -1.0;
+c = -d;
+s = 0.0;
+for (k = 0; k < n; ++k) {
+   a = -l(k+1)/((k+1)^2);
+   c = b - c;
+   s = s + c * a;
+   b = (k + n)*(k - n)*b/((k + 1.0/2.0)*(k + 1));
+}
+seriesprime = s / d;
+
+d = (3.0 + sqrt(8.0))^n;
+d = (d + 1.0/d)/2.0;
+b = -1.0;
+c = -d;
+s = 0.0;
+for (k = 0; k < n; ++k) {
+   a = 1.0/((k+1)^2);
+   c = b - c;
+   s = s + c * a;
+   b = (k + n)*(k - n)*b/((k + 1.0/2.0)*(k + 1));
+}
+series = s / d;
+
+answer = 2.0*seriesprime - 2.0*l(2.0)*series;
+
+print answer;

@@ -1,0 +1,61 @@
+/* gamma.bc
+ * 
+ * Usage:
+ *
+ *    echo "scale=45; obase=10;" | cat - gamma.bc | bc -l
+ *
+ * Gamma constant Gamma(1/3) converges given complete elliptic
+ * integrals of the first kind.
+ *
+ *    Borwein, J. M. and Zucker, I. J.
+ *    "Fast evaluation of the gamma function for small rational
+ *    fractions using complete elliptic integrals of the first kind"
+ *    IMA Journal of Numerical Analysis
+ *    1992, Volume 12, Number 4
+ *    pp. 519-526
+ *    DOI: 10.1093/imanum/12.4.519
+ *
+ * tmj   2012.12.20   Created.   [tord.m.johnson@gmail.com]
+ */
+
+/* Determine the Arithmetic-Geometric Mean AGM(x, y)
+ * accurate to p.
+ *
+ *    x   The first argument.
+ *    y   The second argument.
+ *    p   The desired accuracy.
+ *
+ *    Returns AGM(x, y) accurate to p.
+ *
+ * Arithmetic-Geometric Mean AGM(x, y) given by definition.
+ */
+
+define agm(x, y, p) {
+
+   auto a[], b[], i, d, m;
+
+   a[0] = x;
+   b[0] = y;
+   for (i = 1; 1; ++i) {
+      a[i] = (a[i-1] + b[i-1])/2.0;
+      b[i] = sqrt(a[i-1] * b[i-1]);
+      d = b[i] - a[i];
+      if (((d >= 0) && (d < p)) || ((d < 0) && (-d < p))) {
+         m = (a[i] + b[i])/2.0;
+         break;
+      }
+   }
+   return(m);
+}
+
+
+test = 1.0/(obase^scale);
+twopowersevenninths = e((7.0/9.0)*l(2.0)); /* x^y = e^(y*ln(x)) */
+pipoweronethird = e((1.0/3.0)*l(4.0*a(1.0))); /* x^y = e^(y*ln(x)) and pi = 4*arctan(1) */
+threepoweronetwelfth = e((1.0/12.0)*l(3.0)); /* x^y = e^(y*ln(x)) */
+factor = (twopowersevenninths*pipoweronethird)/threepoweronetwelfth;
+ellipticlamda3 = (sqrt(3.0)-1.0)/(2.0*sqrt(2.0));
+completeellipticintegralellipticlamda3 = (4.0*a(1.0))/(2.0*agm(1.0, sqrt(1.0-(ellipticlamda3^2)), test)); /* pi = 4*arctan(1) */
+completeellipticintegralellipticlamda3poweronethird = e((1.0/3.0)*l(completeellipticintegralellipticlamda3)); /* x^y = e^(y*ln(x)) */
+answer = factor*completeellipticintegralellipticlamda3poweronethird;
+print answer;

@@ -1,0 +1,29 @@
+/* apery.bc
+ * 
+ * Usage:
+ *
+ *    echo "scale=45; obase=10;" | cat - apery.bc | bc -l
+ *
+ * Apery's constant Zeta(3) converges quickly given Ramanujan's series,
+ * as given in:
+ *
+ *    Berndt, Bruce C.
+ *    Ramanujan's Notebooks, Part II.
+ *    New York: Springer, 1999.
+ *    ISBN: 0-387-96794-X
+ *    Chapter 14, Formulas 25.1 and 25.3.
+ *
+ * tmj   2012.12.20   Created.   [tord.m.johnson@gmail.com]
+ */
+
+test = 1.0/(obase^scale);
+sum = (7.0/180.0)*(4.0*a(1.0))^3; /* pi = 4*arctan(1) */
+k = 1;
+for (k = 1; 1; ++k) {
+   term = -2.0/((k^3)*(e(2.0*(4.0*a(1.0))*k)-1.0)); /* pi = 4*arctan(1) */
+   sum += term;
+   if (((term >= 0) && (term < test)) || ((term < 0)  && (-term < test))) {
+      break;
+   }
+}
+print sum;
